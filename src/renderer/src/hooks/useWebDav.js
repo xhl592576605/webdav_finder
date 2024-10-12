@@ -390,15 +390,14 @@ export default () => {
                 })
               return
             }
-            // const new_names = copyPath.value.name.split('.')
-            // new_names.splice(new_names.length - 1, 0, '-copy')
-            // const new_name = new_names.join('.')
-            // const new_name = copyPath.value.name.replace()
+            const new_names = copyPath.value.name.split('.')
+            new_names[0] = new_names[0] + '-copy'
+            const new_name = new_names.join('.')
             webdav_api
-              .copyFile(copyPath.value.path, currentRemotePath.value + '/' + copyPath.value.name)
+              .copyFile(copyPath.value.path, currentRemotePath.value + '/' + new_name)
               .then(() => {
                 getDirectoryContents(currentRemotePath.value)
-                message.success(`粘贴"${copyPath.value}"到"${currentRemotePath.value}"成功`)
+                message.success(`粘贴"${copyPath.value.path}"到"${currentRemotePath.value}"成功`)
               })
           }
         }
