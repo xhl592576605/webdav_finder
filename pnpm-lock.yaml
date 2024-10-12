@@ -11,9 +11,15 @@ dependencies:
   '@electron-toolkit/utils':
     specifier: ^3.0.0
     version: 3.0.0(electron@31.0.2)
+  '@imengyu/vue3-context-menu':
+    specifier: ^1.4.3
+    version: 1.4.3
   ant-design-vue:
     specifier: ^4.2.5
     version: 4.2.5(vue@3.4.30)
+  dayjs:
+    specifier: ^1.11.13
+    version: 1.11.13
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -670,6 +676,10 @@ packages:
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
     deprecated: Use @eslint/object-schema instead
     dev: true
+
+  /@imengyu/vue3-context-menu@1.4.3:
+    resolution: {integrity: sha512-W2rT+xllLSg+u/Z36jE+mrjzO8gCIw0YDDyBxywuASmwrBotU4deftW8Zz9GK/QEHBRNyV5nBINZJo2J257Wlg==}
+    dev: false
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}

@@ -19,7 +19,9 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
+    "@imengyu/vue3-context-menu": "^1.4.3",
     "ant-design-vue": "^4.2.5",
+    "dayjs": "^1.11.13",
     "lodash": "^4.17.21",
     "normalize.css": "^8.0.1",
     "sass": "^1.79.4",
