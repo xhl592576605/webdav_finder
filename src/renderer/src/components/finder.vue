@@ -10,16 +10,25 @@ const emits = defineEmits(['close'])
 
 const {
   remotePaths,
-  fileList,
+  renderFileList,
+  fileDisplayNameFilter,
+  selectedFiles,
+  selectFileCheckedAll,
+  onSelectFileCheckedAllChange,
   fileListContainer,
   cdDirectory,
   cdDirectoryIndex,
   mkDirectory,
   uploadFile,
   uploadDir,
+  openFile,
+  onFileClick,
   onFileContextMenu,
+  onFileContainerClick,
   onFilesContextMenu,
-  onFileContainerClick
+  onFileDragStart,
+  onFileDragEnd,
+  onFileDragEnter
 } = useWebDav()
 
 const close_webdav = () => {
@@ -33,7 +42,11 @@ const close_webdav = () => {
   <div class="webdav_finder">
     <div class="finder_header">
       <div class="search">
-        <a-input-search placeholder="搜索当前目录" enter-button />
+        <a-input-search
+          v-model:value="fileDisplayNameFilter"
+          placeholder="搜索当前目录"
+          enter-button
+        />
       </div>
       <div class="close-webdav">
         <a-button type="primary" danger @click="close_webdav">关闭连接</a-button>
@@ -57,18 +70,41 @@ const close_webdav = () => {
           </template>
         </a-breadcrumb>
       </div>
-
+      <div class="finder_operation">
+        <a-checkbox
+          v-model:checked="selectFileCheckedAll"
+          :indeterminate="selectedFiles.length > 0 && selectedFiles.length < renderFileList.length"
+          @change="onSelectFileCheckedAllChange"
+          >{{
+            selectedFiles.length === 0
+              ? `共${renderFileList.length}项`
+              : `已选${selectedFiles.length}项`
+          }}</a-checkbox
+        >
+      </div>
       <div
         ref="fileListContainer"
         class="finder_list"
         @click="onFileContainerClick"
         @contextmenu="(e) => onFilesContextMenu(e)"
       >
-        <template v-for="file in fileList" :key="file.filename">
+        <template v-for="file in renderFileList" :key="file.filename">
           <div
             class="list_item"
-            @dblclick="file.isfolder ? cdDirectory(file.displayname) : ''"
+            :data-is-dragging="false"
+            :data-drop-target="false"
+            :data-is-selected="selectedFiles.indexOf(file.filename) > -1"
+            :data-filename="file.filename"
+            :data-displayname="file.displayname"
+            :draggable="true"
+            @click="onFileClick(file)"
+            @mousedown.stop
+            @dblclick="file.isfolder ? cdDirectory(file.displayname) : openFile(file)"
             @contextmenu="(e) => onFileContextMenu(e, file)"
+            @dragstart="onFileDragStart($event, file)"
+            @drop="onFileDragEnd($event, file)"
+            @dragenter="onFileDragEnter($event, file)"
+            @dragover.prevent
           >
             <div class="item_icon"><img :src="file.icon" class="" alt="" loading="lazy" /></div>
             <div class="item_name">{{ file.displayname }}</div>
@@ -112,12 +148,16 @@ const close_webdav = () => {
       align-items: center;
       height: 30px;
       margin-top: 10px;
+      margin-bottom: 10px;
       padding: 0 10px;
+      border-bottom: 1px solid #d9d9d960;
+
       .path-router {
         overflow-x: auto;
         overflow-y: hidden;
         width: 100%;
-        height: auto;
+        height: 100%;
+        line-height: 100%;
       }
     }
     .finder_toolbar {
@@ -132,6 +172,14 @@ const close_webdav = () => {
         flex: 1;
       }
     }
+    .finder_operation {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      height: 30px;
+      margin-bottom: 10px;
+      padding: 0 10px;
+    }
     .finder_list {
       display: flex;
       overflow-y: auto;
@@ -140,7 +188,7 @@ const close_webdav = () => {
       flex-wrap: wrap;
       justify-content: flex-start;
       width: 100%;
-      height: calc(100% - 60px);
+      height: calc(100% - 90px);
 
       column-gap: 20px;
       row-gap: 20px;
@@ -150,8 +198,11 @@ const close_webdav = () => {
         flex-direction: column;
         flex-wrap: wrap;
         justify-content: center;
-        width: 200px;
+        width: 130px;
+        padding: 10px;
         cursor: pointer;
+        user-select: none;
+        border-radius: 10px;
 
         column-gap: 10px;
         .item_icon {
@@ -162,6 +213,7 @@ const close_webdav = () => {
             width: 100%;
             height: 100%;
 
+            -webkit-user-drag: none;
             object-fit: cover;
           }
         }
@@ -178,6 +230,28 @@ const close_webdav = () => {
           text-align: center;
           font-size: 12px;
         }
+        &:hover {
+          background-color: rgba(99, 125, 255, 0.1);
+        }
+      }
+      .list_item[data-is-selected='true'] {
+        background-color: rgba(99, 125, 255, 0.12);
+      }
+      .list_item[data-is-dragging='true'] {
+        opacity: 0.5;
+      }
+      .list_item[data-drop-target='true'] {
+        border: 1px dashed #5c6ac4;
+        border-radius: 10px;
+        background-color: rgba(99, 125, 255, 0.12);
+      }
+      .move-selected-mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0.3;
+        border: 1px dashed #d9d9d9;
+        background-color: blue;
       }
     }
   }

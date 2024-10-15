@@ -7,7 +7,7 @@ import { message } from 'ant-design-vue'
 const emits = defineEmits(['login'])
 
 const formState = reactive({
-  remoteUrl: 'http://192.168.206.176:1234',
+  remoteUrl: 'http://192.168.202.120:1234',
   username: 'user',
   password: '0000'
 })
